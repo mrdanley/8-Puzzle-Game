@@ -150,7 +150,97 @@ public class EightPuzzle {
 		} while (loop.equals("Y") || loop.equals("y"));
 	}
 	
+	// run 100 test cases to output and output results to a file
+	private static void runTestCases() {		
+		// store count of solved depths, up to depth 30
+		int[] depthH1 = new int[30];
+		int[] depthH2 = new int[30];
+
+		// store count of number of nodes generated at each depth
+		int[] nodesGenH1 = new int[30];
+		int[] nodesGenH2 = new int[30];
+		
+		// variables for calculating process runtime
+		long startTime, endTime, totalTime;
+
+		// store average solved runtimes
+		float[] averageRuntimeH1 = new float[30];
+		float[] averageRuntimeH2 = new float[30];
+		
+		int [] nodesGen = new int[1];
+		
+		Puzzle currentPuzzle, tempPuzzle, solvedPuzzle;
+		
+		System.out.println("Generating and solving 100 puzzles...");
+		for (int testcase = 0; testcase < 100; testcase++) {
+			if(testcase % 10 == 0) {
+				System.out.println("...");
+			}
+			currentPuzzle = createSolvablePuzzle();
+			
+			// start record nodes and time
+			nodesGen[0] = 0;
+			startTime = System.nanoTime();
+	
+//				System.out.println("Solving Puzzle using H1");
+			tempPuzzle = currentPuzzle;
+			solvedPuzzle = solvePuzzle(tempPuzzle, queueH1, nodesGen);
+//				printSolution(solvedPuzzle);
+			
+			// end record time
+			endTime = System.nanoTime();
+			totalTime = endTime - startTime;
+			averageRuntimeH1[solvedPuzzle.getDepth() - 1] += totalTime;
+			// end record depth
+			depthH1[solvedPuzzle.getDepth() - 1]++;
+			// end record nodes
+			nodesGenH1[solvedPuzzle.getDepth() - 1] += nodesGen[0];
+	
+			// start record nodes and time
+			nodesGen[0] = 0;
+			startTime = System.nanoTime();
+	
+//				System.out.println("Solving Puzzle using H2");
+			tempPuzzle = currentPuzzle;
+			solvedPuzzle = solvePuzzle(tempPuzzle, queueH2, nodesGen);
+//				printSolution(solvedPuzzle);
+			
+			// end record time
+			endTime = System.nanoTime();
+			totalTime = endTime - startTime;
+			averageRuntimeH2[solvedPuzzle.getDepth() - 1] += totalTime;
+			// end record depth
+			depthH2[solvedPuzzle.getDepth() - 1]++;
+			// end record nodes
+			nodesGenH2[solvedPuzzle.getDepth() - 1] += nodesGen[0];
+		}
+		System.out.println("Puzzles solved.");
+		System.out.println("Calculating output data...");
+		// calculate average
+		for (int i = 0; i < 30; i++) {
+			if (depthH1[i] != 0) {
+				averageRuntimeH1[i] /= depthH1[i];
+				nodesGenH1[i] /= depthH1[i];
+			}
+			if (depthH2[i] != 0) {
+				averageRuntimeH2[i] /= depthH2[i];
+				nodesGenH2[i] /= depthH2[i];
+			}
+		}
+		System.out.println("Calculations completed.");
+		// load results into String
+		String fileString = "";
+		fileString += "Using A* Search Algorithm on an 8-Puzzle\n,# of Cases,,Nodes Generated,,Average Runtime,,\n";
+		fileString += "Depth,H1,H2,H1,H2,H1,H2\n";
+		for (int i = 0; i < 30; i++) {
+			fileString += ((i + 1) + "," + depthH1[i] + "," + depthH2[i] + "," + nodesGenH1[i] + "," + nodesGenH2[i]
+					+ "," + averageRuntimeH1[i] + "," + averageRuntimeH2[i] + "\n");
+		}
+		outputToFile(fileString);
+	}
+	
 	// solve puzzle using priority queue with heuristic and explored set
+	// nodesGen is an array of 1 integer only used to store the number of nodes for the method 'runTestCases()'
 	private static Puzzle solvePuzzle(Puzzle puzzle, Queue<Puzzle> queue, int [] nodesGen) {
 		Puzzle p = puzzle;
 		explored.put(Arrays.toString(p.getTiles()), 0);
@@ -201,94 +291,6 @@ public class EightPuzzle {
 		return false;
 	}
 	
-	// run 100 test cases to output and output results to a file
-	private static void runTestCases() {		
-		// store count of solved depths, up to depth 30
-		int[] depthH1 = new int[30];
-		int[] depthH2 = new int[30];
-
-		// store count of number of nodes generated at each depth
-		int[] nodesGenH1 = new int[30];
-		int[] nodesGenH2 = new int[30];
-		
-		// variables for calculating process runtime
-		long startTime, endTime, totalTime;
-
-		// store average solved runtimes
-		float[] averageRuntimeH1 = new float[30];
-		float[] averageRuntimeH2 = new float[30];
-		
-		int [] nodesGen = new int[1];
-		
-		Puzzle currentPuzzle, tempPuzzle, solvedPuzzle;
-		
-		System.out.println("Generating and solving 100 puzzles...");
-		for (int testcase = 0; testcase < 100; testcase++) {
-			if(testcase % 10 == 0) {
-				System.out.println("...");
-			}
-			currentPuzzle = createSolvablePuzzle();
-			
-			// start record nodes and time
-			nodesGen[0] = 0;
-			startTime = System.nanoTime();
-	
-//			System.out.println("Solving Puzzle using H1");
-			tempPuzzle = currentPuzzle;
-			solvedPuzzle = solvePuzzle(tempPuzzle, queueH1, nodesGen);
-//			printSolution(solvedPuzzle);
-			
-			// end record time
-			endTime = System.nanoTime();
-			totalTime = endTime - startTime;
-			averageRuntimeH1[solvedPuzzle.getDepth() - 1] += totalTime;
-			// end record depth
-			depthH1[solvedPuzzle.getDepth() - 1]++;
-			// end record nodes
-			nodesGenH1[solvedPuzzle.getDepth() - 1] += nodesGen[0];
-	
-			// start record nodes and time
-			nodesGen[0] = 0;
-			startTime = System.nanoTime();
-	
-//			System.out.println("Solving Puzzle using H2");
-			tempPuzzle = currentPuzzle;
-			solvedPuzzle = solvePuzzle(tempPuzzle, queueH2, nodesGen);
-//			printSolution(solvedPuzzle);
-			
-			// end record time
-			endTime = System.nanoTime();
-			totalTime = endTime - startTime;
-			averageRuntimeH2[solvedPuzzle.getDepth() - 1] += totalTime;
-			// end record depth
-			depthH2[solvedPuzzle.getDepth() - 1]++;
-			// end record nodes
-			nodesGenH2[solvedPuzzle.getDepth() - 1] += nodesGen[0];
-		}
-		System.out.println("Puzzles solved.");
-		System.out.println("Calculating output data...");
-		// calculate average
-		for (int i = 0; i < 30; i++) {
-			if (depthH1[i] != 0) {
-				averageRuntimeH1[i] /= depthH1[i];
-				nodesGenH1[i] /= depthH1[i];
-			}
-			if (depthH2[i] != 0) {
-				averageRuntimeH2[i] /= depthH2[i];
-				nodesGenH2[i] /= depthH2[i];
-			}
-		}
-		System.out.println("Calculations completed.");
-		// load results into String
-		String fileString = "";
-		fileString += "Using A* Search Algorithm on an 8-Puzzle\n,# of Cases,,Nodes Generated,,Average Runtime,,\n";
-		fileString += "Depth,H1,H2,H1,H2,H1,H2\n";
-		for (int i = 0; i < 30; i++) {
-			fileString += ((i + 1) + "," + depthH1[i] + "," + depthH2[i] + "," + nodesGenH1[i] + "," + nodesGenH2[i]
-					+ "," + averageRuntimeH1[i] + "," + averageRuntimeH2[i] + "\n");
-		}
-		outputToFile(fileString);
-	}
 	
 	// print solution of puzzle nodes starting at the solution leaf node and moving up to the root puzzle
 	// root puzzle will have parent NULL
