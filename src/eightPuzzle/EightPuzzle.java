@@ -36,6 +36,7 @@ public class EightPuzzle {
 	}
 	
 	private static void showMenu(){
+		boolean userExit = false;
 		String input;
 		
 		do{
@@ -62,27 +63,34 @@ public class EightPuzzle {
 			case 3:
 				runTestCases();
 				break;
+			case 4:
+				System.out.println("Goodbye.");
+				userExit = true;
+				break;
 		}
-		System.out.println();
-		do{
-			System.out.println("Enter 'X' to exit or 'O' for another option: ");
-			input = kb.next();
-			if(Pattern.matches("[XxOo]", input)) {
-				break;
-			}else {
-				System.out.println("Incorrect input. Enter a valid option.");
+		
+		if(!userExit){
+			System.out.println();
+			do{
+				System.out.println("Enter 'X' to exit or 'O' for another option: ");
+				input = kb.next();
+				if(Pattern.matches("[XxOo]", input)) {
+					break;
+				}else {
+					System.out.println("Incorrect input. Enter a valid option.");
+				}
+			}while(true);
+			System.out.println();
+			switch(input.charAt(0)){
+				case 'X':
+				case 'x':
+					System.out.println("Goodbye.");
+					break;
+				case 'O':
+				case 'o':
+					showMenu();
+					break;
 			}
-		}while(true);
-		System.out.println();
-		switch(input.charAt(0)){
-			case 'X':
-			case 'x':
-				System.out.println("Thank you, come again.");
-				break;
-			case 'O':
-			case 'o':
-				showMenu();
-				break;
 		}
 	}
 	
